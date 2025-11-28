@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Salary Breakdown</title>
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f8;
+        padding: 20px;
+      }
+      .card {
+        max-width: 820px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      }
+      h2 {
+        text-align: center;
+        margin: 6px 0 18px;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .controls label {
+        font-size: 13px;
+        font-weight: bold;
+      }
+      .controls input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        width: 180px;
+      }
+      button {
+        padding: 10px 14px;
+        background: #0b76ff;
+        border: none;
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #005fcc;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px 8px;
+        text-align: right;
+      }
+      th {
+        background: #e9ecef;
+        font-weight: bold;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+      }
+      td:first-child,
+      th:first-child {
+        text-align: left;
+      }
+      .section-title {
+        font-weight: bold;
+        border: none;
+        padding-top: 14px;
+        text-align: left;
+        background: #f8f9fa;
+      }
+      .bold {
+        font-weight: 700;
+        background: #f8f9fa;
+      }
+      .highlight {
+        background: #fff3cd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>Detailed Salary Breakdown</h2>
+
+      <div class="controls">
+        <div>
+          <label for="consolidated"
+            >Consolidated Salary / Basic Pay (Yearly)</label
+          ><br />
+          <input id="consolidated" type="number" value="0" class="highlight" />
+        </div>
+        <div>
+          <label for="hra">HRA (Yearly)</label><br />
+          <input id="hra" type="number" value="0" class="highlight" />
+        </div>
+        <div>
+          <label for="personal">Personal Pay (Yearly)</label><br />
+          <input id="personal" type="number" value="0" class="highlight" />
+        </div>
+        <div style="align-self: end">
+          <button id="calcBtn">Calculate Salary</button>
+        </div>
+      </div>
+
+      <table aria-label="salary-table">
+        <thead>
+          <tr>
+            <th>Salary Particulars</th>
+            <th>Rs. P.M.</th>
+            <th>Rs. P.A</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td>Consolidated Salary/Basic Pay</td>
+            <td id="consPm">-</td>
+            <td id="consPa">-</td>
+          </tr>
+          <tr>
+            <td>HRA</td>
+            <td id="hraPm">-</td>
+            <td id="hraPa">-</td>
+          </tr>
+          <tr>
+            <td>Personal Pay / Other Allowances</td>
+            <td id="personalPm">-</td>
+            <td id="personalPa">-</td>
+          </tr>
+          <tr>
+            <td class="bold">Gross Salary (Total Earnings)</td>
+            <td id="grossPm" class="bold">-</td>
+            <td id="grossPa" class="bold">-</td>
+          </tr>
+
+          <tr class="section-title">
+            <td colspan="3">
+              Retirals (Employer's(company) Contribution - Part of CTC)
+            </td>
+          </tr>
+          <tr>
+            <td>PF (Statutory 12% of Basic)</td>
+            <td id="ePfPm">-</td>
+            <td id="ePfPa">-</td>
+          </tr>
+          <tr>
+            <td>Gratuity (Provision: 15/26 Days' Wages)</td>
+            <td id="grPm">-</td>
+            <td id="grPa">-</td>
+          </tr>
+          <tr>
+            <td class="bold">Total Employer(company) Retirals</td>
+            <td id="totalRetrPm" class="bold">-</td>
+            <td id="totalRetrPa" class="bold">-</td>
+          </tr>
+          <tr>
+            <td class="bold">Fixed Salary (Cost to Company - CTC)</td>
+            <td id="fixedPm" class="bold" style="background: #e2f0d9">-</td>
+            <td id="fixedPa" class="bold" style="background: #e2f0d9">-</td>
+          </tr>
+
+          <tr class="section-title">
+            <td colspan="3">Employee Deductions (Self-Contribution)</td>
+          </tr>
+          <tr>
+            <td>Employee PF (12% of Basic)</td>
+            <td id="selfPfPm">-</td>
+            <td id="selfPfPa">-</td>
+          </tr>
+          <tr>
+            <td>ESIC (0.75% of Gross)</td>
+            <td id="esicPm">-</td>
+            <td id="esicPa">-</td>
+          </tr>
+          <tr>
+            <td class="bold">Total Deductions</td>
+            <td id="totalDedPm" class="bold">-</td>
+            <td id="totalDedPa" class="bold">-</td>
+          </tr>
+
+          <tr>
+            <td class="bold">Net In-Hand Salary</td>
+            <td id="inHandPm" class="bold" style="background: #c3e6cb">-</td>
+            <td id="inHandPa" class="bold" style="background: #c3e6cb">-</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top: 12px; font-size: 13px; color: #444">
+        Notes:<br />
+        1. PF: 12% of Consolidated Salary (annual).<br />
+        2. Gratuity: Calculated as Consolidated Salary × (15/26/12).<br />
+        3. ESIC: 0.75% of Gross Salary (applicable only if monthly gross ≤
+        ₹21,000).<br />
+        4. Professional Tax: State-specific fixed monthly deduction (not
+        included).<br />
+        5. TDS: Not included; varies based on annual taxable income and chosen
+        tax regime.
+      </p>
+      <p
+        id="downloadPdf"
+        style="cursor: pointer; color: blue; text-decoration: underline"
+      >
+        Download
+      </p>
+    </div>
+
+    <script>
+      // Constants
+      const MONTHS_IN_YEAR = 12;
+      const PF_RATE = 0.12; // Statutory 12% for both sides
+      // Gratuity Factor definition as originally provided by the user: 15/26/12
+      const GRATUITY_FACTOR = 15 / 26 / 12;
+      const ESIC_RATE = 0.0075; // Statutory 0.75% of Gross Wages
+
+      function fmt(n) {
+        // Formats number with commas for Indian Rupees (e.g., 1,00,000)
+        if (typeof n !== "number" || isNaN(n)) return "0";
+        return n.toLocaleString("en-IN");
+      }
+
+      function calculate() {
+        // 1. Get Inputs (Annual amounts)
+        const consolidatedPa =
+          Number(document.getElementById("consolidated").value) || 0;
+        const hraPa = Number(document.getElementById("hra").value) || 0;
+        const personalPa =
+          Number(document.getElementById("personal").value) || 0;
+
+        // --- SECTION 1: GROSS SALARY ---
+        const consPm = consolidatedPa / MONTHS_IN_YEAR;
+        const hraPm = hraPa / MONTHS_IN_YEAR;
+        const personalPm = personalPa / MONTHS_IN_YEAR;
+
+        const grossPa = consolidatedPa + hraPa + personalPa;
+        const grossPm = grossPa / MONTHS_IN_YEAR;
+
+        // --- SECTION 2: EMPLOYER CONTRIBUTIONS (Retirals / CTC) ---
+        // Employer PF (12% of Consolidated)
+        const ePfPa = Math.round(consolidatedPa * PF_RATE);
+        const ePfPm = ePfPa / MONTHS_IN_YEAR;
+
+        // Gratuity (Calculated using the user's specific factor)
+        // Monthly provision calculated first: ConsolidatedPa * (15 / 26 / 12)
+        const gratuityPm = (consolidatedPa * GRATUITY_FACTOR) / 12;
+        const gratuityPa = Math.round(gratuityPm * MONTHS_IN_YEAR);
+
+        // Total Employer Retirals & CTC
+        const totalRetrPa = Math.round(ePfPa + gratuityPa);
+        const totalRetrPm = totalRetrPa / MONTHS_IN_YEAR;
+
+        const fixedPa = grossPa + totalRetrPa; // CTC
+        const fixedPm = fixedPa / MONTHS_IN_YEAR;
+
+        // --- SECTION 3: EMPLOYEE DEDUCTIONS (New) ---
+
+        // Employee PF (12% of Consolidated)
+        // PF Contribution P.A. is the same as the employer's contribution
+        const selfPfPa = ePfPa;
+        const selfPfPm = selfPfPa / MONTHS_IN_YEAR;
+
+        // ESIC (0.75% of Gross Salary)
+        const esicPa = Math.round(grossPa * ESIC_RATE);
+        const esicPm = esicPa / MONTHS_IN_YEAR;
+
+        // Total Deductions
+        const totalDedPa = Math.round(selfPfPa + esicPa);
+        const totalDedPm = totalDedPa / MONTHS_IN_YEAR;
+
+        // --- SECTION 4: IN-HAND SALARY (New) ---
+        // In-Hand = Gross Salary - Total Deductions
+        const inHandPa = grossPa - totalDedPa;
+        const inHandPm = inHandPa / MONTHS_IN_YEAR;
+
+        // --------------------------------- OUTPUT ---------------------------------
+
+        // Earnings
+        document.getElementById("consPm").textContent = fmt(Math.round(consPm));
+        document.getElementById("consPa").textContent = fmt(
+          Math.round(consolidatedPa)
+        );
+        document.getElementById("hraPm").textContent = fmt(Math.round(hraPm));
+        document.getElementById("hraPa").textContent = fmt(Math.round(hraPa));
+        document.getElementById("personalPm").textContent = fmt(
+          Math.round(personalPm)
+        );
+        document.getElementById("personalPa").textContent = fmt(
+          Math.round(personalPa)
+        );
+        document.getElementById("grossPm").textContent = fmt(
+          Math.round(grossPm)
+        );
+        document.getElementById("grossPa").textContent = fmt(
+          Math.round(grossPa)
+        );
+
+        // Employer Retirals & CTC
+        document.getElementById("ePfPm").textContent = fmt(Math.round(ePfPm));
+        document.getElementById("ePfPa").textContent = fmt(Math.round(ePfPa));
+        document.getElementById("grPm").textContent = fmt(
+          Math.round(gratuityPm)
+        );
+        document.getElementById("grPa").textContent = fmt(
+          Math.round(gratuityPa)
+        );
+        document.getElementById("totalRetrPm").textContent = fmt(
+          Math.round(totalRetrPm)
+        );
+        document.getElementById("totalRetrPa").textContent = fmt(
+          Math.round(totalRetrPa)
+        );
+        document.getElementById("fixedPm").textContent = fmt(
+          Math.round(fixedPm)
+        );
+        document.getElementById("fixedPa").textContent = fmt(
+          Math.round(fixedPa)
+        );
+
+        // Employee Deductions
+        document.getElementById("selfPfPm").textContent = fmt(
+          Math.round(selfPfPm)
+        );
+        document.getElementById("selfPfPa").textContent = fmt(
+          Math.round(selfPfPa)
+        );
+        document.getElementById("esicPm").textContent = fmt(Math.round(esicPm));
+        document.getElementById("esicPa").textContent = fmt(Math.round(esicPa));
+        document.getElementById("totalDedPm").textContent = fmt(
+          Math.round(totalDedPm)
+        );
+        document.getElementById("totalDedPa").textContent = fmt(
+          Math.round(totalDedPa)
+        );
+
+        // In-Hand Salary
+        document.getElementById("inHandPm").textContent = fmt(
+          Math.round(inHandPm)
+        );
+        document.getElementById("inHandPa").textContent = fmt(
+          Math.round(inHandPa)
+        );
+      }
+
+      // Event Listener and Initial Run
+      document.getElementById("calcBtn").addEventListener("click", calculate);
+      calculate();
+
+      document
+        .getElementById("downloadPdf")
+        .addEventListener("click", function () {
+          window.print(); // opens print dialog (Print or Save as PDF)
+        });
+    </script>
+  </body>
+</html>
